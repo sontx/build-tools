@@ -14,16 +14,29 @@ namespace BuildTools.Utils
 
         public static void CopyDir(string src, string dest)
         {
-            //Now Create all of the directories
-            foreach (var dirPath in Directory.GetDirectories(src, "*", SearchOption.AllDirectories))
+            // Get the subdirectories for the specified directory.
+            var dir = new DirectoryInfo(src);
+
+            if (!dir.Exists)
+                throw new DirectoryNotFoundException(  $"Source directory does not exist or could not be found: {src}");
+
+            var dirs = dir.GetDirectories();
+            // If the destination directory doesn't exist, create it.
+            if (!Directory.Exists(dest))
+                Directory.CreateDirectory(dest);
+
+            // Get the files in the directory and copy them to the new location.
+            var files = dir.GetFiles();
+            foreach (var file in files)
             {
-                Directory.CreateDirectory(dirPath.Replace(src, dest));
+                var temppath = Path.Combine(dest, file.Name);
+                file.CopyTo(temppath, false);
             }
 
-            //Copy all the files & Replaces any files with the same name
-            foreach (var newPath in Directory.GetFiles(src, "*.*", SearchOption.AllDirectories))
+            foreach (var subdir in dirs)
             {
-                File.Copy(newPath, newPath.Replace(src, dest), true);
+                var temppath = Path.Combine(dest, subdir.Name);
+                CopyDir(subdir.FullName, temppath);
             }
         }
     }
