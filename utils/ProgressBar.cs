@@ -32,6 +32,7 @@ namespace BuildTools.Utils
 
         public void Report(double value)
         {
+            value /= 100D;
             // Make sure value is in [0..1] range
             value = Math.Max(0, Math.Min(1, value));
             Interlocked.Exchange(ref _currentProgress, value);

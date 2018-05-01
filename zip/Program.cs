@@ -65,7 +65,7 @@ namespace BuildTools.Zip
                 if (sourceFile == null) continue;
 
                 var dest = Path.Combine(dir, Path.GetFileName(sourceFile));
-                if (Directory.Exists(sourceFile))
+                if (File.GetAttributes(sourceFile).HasFlag(FileAttributes.Directory))
                 {
                     dest = Path.Combine(dir, Path.GetFileName(sourceFile));
                     PathUtils.CopyDir(sourceFile, dest);
