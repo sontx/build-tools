@@ -35,8 +35,27 @@ namespace BuildTools.Ftp
             }
 
             var options = ftpOptionsResult.Value;
-            if (!VerifyFtpOptions(options)) return;
-            UploadToServer(options);
+
+            while (true)
+            {
+                try
+                {
+                    if (!VerifyFtpOptions(options)) return;
+                    UploadToServer(options);
+                }
+                catch (FtpCommandException exception)
+                {
+                    if (exception.Message.Contains("Login"))
+                    {
+                        Console.WriteLine("Password is incorrect, try again!");
+                        options.Password = null;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
         }
 
         private static bool VerifyConfigOptions(ParserResult<ConfigOptions> configOptionsResult)
